@@ -71,12 +71,14 @@ Vagrant.configure("2") do |config|
   config.vm.provision :shell do |shell|
   shell.inline = "rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm && yum -y install puppet; 
                   mkdir -p /etc/puppet/modules;
-                  puppet module install puppetlabs/nodejs;
-                  puppet module install puppetlabs/apache"
+                  puppet module install puppetlabs/rabbitmq;
+                  puppet module install puppet/zabbix"
   end
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
+    puppet.module_path = "puppet/modules"
+    puppet.hiera_config_path = "puppet/hiera.yaml"
     puppet.manifest_file = "site.pp"
   end
 end
