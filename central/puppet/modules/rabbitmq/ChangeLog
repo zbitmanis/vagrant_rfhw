@@ -1,0 +1,14 @@
+2013-03-13 v2.0.0
+* Complete rewrite and clean-up 
+* Module assumes you have a repo in place for rabbitmq
+
+2012-12-11 v1.1.1
+* Ran puppet-lint on all manifests and cleaned them up
+
+2012-12-11 v1.1.0
+* Added config file for nodename
+* Added ensure/enabled parameters for service
+
+2012-11-29 v1.0.0
+* First release
+* Supports installing from RPM located on a web server

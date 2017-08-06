@@ -1,7 +1,7 @@
 {
   "name": "puppet-staging",
-  "version": "1.0.7",
-  "author": "voxpupuli",
+  "version": "2.2.0",
+  "author": "Vox Pupuli",
   "summary": "Compressed file staging and deployment",
   "license": "Apache-2.0",
   "source": "https://github.com/voxpupuli/puppet-staging",
@@ -107,12 +107,8 @@
   ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": "3.x"
-    },
-    {
       "name": "puppet",
-      "version_requirement": ">=2.7.0"
+      "version_requirement": ">= 3.8.7 < 5.0.0"
     }
   ],
   "description": "Manages compressed file staging and deployment."

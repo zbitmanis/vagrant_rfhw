@@ -1,55 +1,32 @@
 {
-  "name": "puppetlabs-rabbitmq",
-  "version": "5.6.0",
-  "author": "puppetlabs",
-  "summary": "Installs, configures, and manages RabbitMQ.",
-  "license": "Apache-2.0",
-  "source": "https://github.com/puppetlabs/puppetlabs-rabbitmq",
-  "project_page": "https://github.com/puppetlabs/puppetlabs-rabbitmq",
-  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES",
+  "version": "2.0.0",
+  "types": [
+
+  ],
+  "license": "GNU/GPLv3",
+  "project_page": "https://github.com/jcochard/puppet-rabbitmq",
+  "source": "git://github.com/jcochard/puppet-rabbitmq",
+  "description": "Install, configure, and manage rabbitmq.",
+  "checksums": {
+    "LICENSE.txt": "d32239bcb673463ab874e80d47fae504",
+    "manifests/service.pp": "c63b6f0dbe62d80c453aa37b058e30cd",
+    "init.pp": "cc029c2f5ef015e5305e987b822f2e98",
+    "manifests/init.pp": "47c4930655f0483ee28ae643ab905f70",
+    "manifests/package.pp": "499e66aff3af917a12f45701340ad6aa",
+    "Modulefile": "c9f685b4546cd21e1437aee4b9d8be95",
+    "manifests/params.pp": "be3408d3b55c47a512ff5389e4755ae8",
+    "ChangeLog": "da0eb23d45ec09852c5012fa6b1fd9f9",
+    "templates/rabbitmq-env.erb": "3232486334b6ca85e8911997009873d5",
+    "README": "0a9ec7d7152a35e5ef7d9fb3bb430664",
+    "manifests/config.pp": "2d1eba6c72eb65cba84d12f253c37319"
+  },
+  "summary": "RabbitMQ module",
+  "name": "jasonc-rabbitmq",
   "dependencies": [
-    {"name":"puppetlabs/stdlib","version_requirement":">=3.0.0 <5.0.0"},
-    {"name":"puppetlabs/apt","version_requirement":">=1.8.0 <3.0.0"},
-    {"name":"puppet/staging","version_requirement":">=0.3.1 <2.0.0"}
-  ],
-  "data_provider": null,
-  "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "6",
-        "7",
-        "8"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "12.04",
-        "14.04"
-      ]
+      "version_requirement": ">= 3.2.0",
+      "name": "puppetlabs/stdlib"
     }
   ],
-  "requirements": [
-    {
-      "name": "puppet",
-      "version_requirement": ">=3.0.0 < 5.0.0"
-    }
-  ]
+  "author": "Jason Cochard"
 }

@@ -68,8 +68,12 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  $script = <<-CSCRIPT 
-cat <<-'EOF' >/etc/yum.repos.d/localvagrant.repo
+#config.vm.provider :kvm do |kvm, override|
+#    kvm.memory_size     = '2048m'
+# end  
+
+$script = <<-CSCRIPT 
+cat<<-EOF >/etc/yum.repos.d/localvagrant.repo
 [localVagrant]
 name=CentOS-$releasever - local vagrant packages for $basearch
 baseurl=file:///vagrant/repo/centos/7/x86_64/
@@ -77,24 +81,44 @@ enabled=1
 gpgcheck=0
 protect=1  
 EOF
-    rpm -import /vagrant/rpm-gpg/RPM-GPG-KEY-puppet
-    yum -y install puppet
-  CSCRIPT
-  config.vm.define :central do |central| 
-    central.vm.provision :shell do |shell|
-    shell.inline = $script
-                    # "rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm ;#&& yum -y install puppet; 
-                    #mkdir -p /etc/puppet/modules;
-                    #puppet module install puppetlabs/rabbitmq;
-                    #puppet module install puppetlabs/java;
-                    #puppet module install puppet/zabbix"
-    end
+  rpm -import /vagrant/rpm-gpg/RPM-GPG-KEY-puppet
+  yum -y install puppet-agent 
+CSCRIPT
 
-    central.vm.provision :puppet do |puppet|
-      puppet.manifests_path = "puppet/manifests"
-      puppet.module_path = "puppet/modules"
-      puppet.hiera_config_path = "puppet/hiera.yaml"
-      puppet.manifest_file = "site.pp"
+  config.vm.define :central do |central| 
+   # central.vm.network "public_network", ip: "192.168.0.23"
+   central.vm.network "forwarded_port", guest: 80, host: 8080
+   central.vm.provider :libvirt do |libvirt, override|
+      libvirt.memory = 2048
+      libvirt.cpus = 2
+      libvirt.nested = true
     end
+    central.vm.hostname = "central"
+    central.vm.box = "centos/7"
+    central.vm.provision :shell do |shell|
+      shell.inline = $script
+    end
+    central.vm.provision "shell", inline: "/opt/puppetlabs/bin/puppet apply --modulepath=/vagrant/puppet/modules /vagrant/puppet/manifests/site.pp"
+#    central.vm.provision :puppet do |puppet|  this provisioning method  is compatible  only with puppet < 4  && some modules like puppet/zabbix is compatible puppet>=4 || puppet ent 
+#      puppet.manifests_path = "puppet/manifests"
+#      puppet.module_path = "puppet/modules"
+#      puppet.hiera_config_path = "puppet/hiera.yaml"
+#      puppet.manifest_file = "site.pp"
+#    end
   end
+#  config.vm.define :worker do |worker| 
+#   # worker.vm.network "public_network", ip: "192.168.0.23"
+#    worker.vm.hostname = "worker"
+#    worker.vm.box = "centos/7"
+#    worker.vm.provision :shell do |shell|
+#      shell.inline = $script
+#    end
+#
+#    worker.vm.provision :puppet do |puppet|
+#      puppet.manifests_path = "puppet/manifests"
+#      puppet.module_path = "puppet/modules"
+#      puppet.hiera_config_path = "puppet/hiera.yaml"
+#      puppet.manifest_file = "site.pp"
+#    end
+#  end
 end
