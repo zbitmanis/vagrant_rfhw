@@ -1,4 +1,12 @@
+
+  $zabbix_servername = 'central'
+  $zabbix_hostgroup = 'Linux servers'
+  $zabbix_url = 'localhost'
+  $zabbix_user = 'Admin'   
+  $zabbix_pass = 'zabbix'
+  $serverip = zbhelper::ns_resolve ($zabbix_servername) 
 node 'central' {
+
   class { 'apache':
     mpm_module => 'prefork',
     default_vhost => false,	
@@ -26,34 +34,60 @@ node 'central' {
       'Date/date.timezone'      => 'Europe/Riga',
     },
   }
-  $myip=$::facts['networking']['ip']
-  $myhost=$::facts['networking']['hostname']
-  notify  {"MyIP is ${myip} ( ${facts['networking']['ip']}) MyHost ${myhost} ( ${facts['networking']['hostname']}  ": }
-  class { 'zabbix::agent':
-    server => $::facts['networking']['ip'],
+  #$myip=$::facts['networking']['ip']
+  #$myhost=$::facts['networking']['hostname']
+  #notify  {"MyIP is ${myip} ( ${facts['networking']['ip']}) MyHost ${myhost} ( ${facts['networking']['hostname']}  ": }
+  
+   class { 'zabbix::agent':
+    server => "127.0.0.1,${serverip} ",
     hostname => $::facts['networking']['hostname'],
+    listenip => '0.0.0.0',	
    }
-   zabbix::template { 'Template_Linux_App_Apache_rabbitmq': 
-	templ_source => 'puppet:///modules/zabbix/templates/Template_Linux_App_Apache_rabbitmq.xml' 
+
+   file { '/etc/zabbix/Template_Linux_App_rabbitmq.xml': 
+       source => 'puppet:///modules/zabbix/templates/Template_Linux_App_rabbitmq.xml' 
+
+  }
+  zabbix_template { 'Template_Linux_App_RabbitMQ': 
+     template_source => '/etc/zabbix/Template_Linux_App_rabbitmq.xml',
+     zabbix_url => 'localhost',    
+     zabbix_user => 'Admin',   
+     zabbix_pass => 'zabbix',
+     require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,  Class['Zabbix'] ] 
+  }
+  	
+  zabbix_host { $::facts['networking']['hostname']:
+	ipaddress => $::facts['networking']['ip'],
+	group => $zabbix_hostgroup, 
+	templates => ['Template_Linux_App_RabbitMQ','Template OS Linux','Template App SSH Service'] , 
+        zabbix_url => $zabbix_url,
+        zabbix_user => $zabbix_user,
+        zabbix_pass => $zabbix_pass, 
+        port => 10050,
+        require => [ Class['Zabbix::Agent'] , Class['Zabbix']  ]
+       }
+  	 
+#   class { 'zbxhelper':
+#	   zabbix_servername => 'central',
+#     require  =>Class['zabbix']
+#   }
+   class { 'zbhelper::jpublisher':
    }
-   
-   class { 'zbxhelper':
-	zabbix_servername => 'central',
-   }
+
    class {'rabbitmq':
    }	
    
    package{'python34-pika':
-	ensure=>latest,
+    ensure=>latest,
    }
    package{'java':
-	ensure=>latest,
+    ensure=>latest,
    }
-   package{'java-1.8.0-openjdk-devel':
-	ensure=>latest,
+   package{'java-devel':
+    ensure=>latest,
    }
    package{'rabbitmq-java-client':
-	ensure=>latest,
+    ensure=>latest,
    }
   #class { 'zabbix_hostgroup':
 #	  

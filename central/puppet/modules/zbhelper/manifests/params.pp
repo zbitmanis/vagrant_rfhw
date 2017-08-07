@@ -1,0 +1,2 @@
+class zbhelper::params  {
+}

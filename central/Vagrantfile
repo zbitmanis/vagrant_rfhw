@@ -83,6 +83,7 @@ protect=1
 EOF
   rpm -import /vagrant/rpm-gpg/RPM-GPG-KEY-puppet
   yum -y install puppet-agent 
+  /opt/puppetlabs/puppet/bin/gem install zabbixapi
 CSCRIPT
 
   config.vm.define :central do |central| 
