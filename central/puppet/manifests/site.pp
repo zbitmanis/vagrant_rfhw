@@ -5,6 +5,7 @@
   $zabbix_user = 'Admin'   
   $zabbix_pass = 'zabbix'
   $serverip = zbhelper::ns_resolve ($zabbix_servername) 
+  $worker_hostname='worker'
 node 'central' {
 
   class { 'apache':
@@ -53,7 +54,7 @@ node 'central' {
      zabbix_url => 'localhost',    
      zabbix_user => 'Admin',   
      zabbix_pass => 'zabbix',
-     require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,  Class['Zabbix'] ] 
+     require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] ] 
   }
   	
   zabbix_host { $::facts['networking']['hostname']:
@@ -64,13 +65,19 @@ node 'central' {
         zabbix_user => $zabbix_user,
         zabbix_pass => $zabbix_pass, 
         port => 10050,
-        require => [ Class['Zabbix::Agent'] , Class['Zabbix']  ]
+        require => [ Class['Zabbix::Agent'] , Class['Zabbix::Server'], Service['httpd']  ]
+       }
+  zabbix_host { $worker_hostname:
+	ipaddress => zbhelper::ns_resolve($worker_hostname),
+	group => $zabbix_hostgroup, 
+	templates => ['Template OS Linux','Template App SSH Service'] , 
+        zabbix_url => $zabbix_url,
+        zabbix_user => $zabbix_user,
+        zabbix_pass => $zabbix_pass, 
+        port => 10050,
+        require => [ Class['Zabbix::Server'], Service['httpd']  ]
        }
   	 
-#   class { 'zbxhelper':
-#	   zabbix_servername => 'central',
-#     require  =>Class['zabbix']
-#   }
    class { 'zbhelper::jpublisher':
    }
 
@@ -89,16 +96,16 @@ node 'central' {
    package{'rabbitmq-java-client':
     ensure=>latest,
    }
-  #class { 'zabbix_hostgroup':
-#	  
-#  }
- # class{ '::zabbix_host':
-#	hostname => ${facts['networking']['hostname']},
-#	ipaddress => ${facts['networking']['ip']},
-#
-#  } 
 }
 
 node /worker.*/ {
+   class { 'zabbix::agent':
+    server => "127.0.0.1,${serverip} ",
+    hostname => $::facts['networking']['hostname'],
+    listenip => '0.0.0.0',	
+   }
+   package{'python34-pika':
+    ensure=>latest,
+   }
 
 }

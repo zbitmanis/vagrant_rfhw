@@ -86,7 +86,7 @@ EOF
   /opt/puppetlabs/puppet/bin/gem install zabbixapi
 CSCRIPT
 
-  config.vm.define :central do |central| 
+  config.vm.define :central, primary: true  do |central| 
    # central.vm.network "public_network", ip: "192.168.0.23"
    central.vm.network "forwarded_port", guest: 80, host: 8080
    central.vm.provider :libvirt do |libvirt, override|
@@ -107,19 +107,12 @@ CSCRIPT
 #      puppet.manifest_file = "site.pp"
 #    end
   end
-#  config.vm.define :worker do |worker| 
-#   # worker.vm.network "public_network", ip: "192.168.0.23"
-#    worker.vm.hostname = "worker"
-#    worker.vm.box = "centos/7"
-#    worker.vm.provision :shell do |shell|
-#      shell.inline = $script
-#    end
-#
-#    worker.vm.provision :puppet do |puppet|
-#      puppet.manifests_path = "puppet/manifests"
-#      puppet.module_path = "puppet/modules"
-#      puppet.hiera_config_path = "puppet/hiera.yaml"
-#      puppet.manifest_file = "site.pp"
-#    end
-#  end
+  config.vm.define :worker do |worker| 
+    worker.vm.hostname = "worker"
+    worker.vm.box = "centos/7"
+    worker.vm.provision :shell do |shell|
+      shell.inline = $script
+    end
+    central.vm.provision "shell", inline: "/opt/puppetlabs/bin/puppet apply --modulepath=/vagrant/puppet/modules /vagrant/puppet/manifests/site.pp"
+  end
 end

@@ -25,7 +25,36 @@ $path = '/opt/zb',
   creates => "${path}/bin/${src_name}.class",
   path    => ['/usr/bin', '/bin',],
   subscribe => File["${path}/src/${src_name}.java"],
-  require => [ Package['java-devel'], Package['rabbitmq-java-client'] ]
+  require => [ Package['java-devel'], Package['rabbitmq-java-client'], File["${path}/src/${src_name}.java"] ]
  }
+
+$strcontent ="#!/bin/bash 
+for (( i =0; i<100; i++ )); do 
+_RND=$((1 + RANDOM % 10))
+/bin/java -cp ${path}/bin/:/usr/share/java/rabbitmq-java-client.jar ${src_name} \$_RND
+done 
+"
+
+$rcontent ="#!/bin/bash 
+#!/bin/bash
+
+_A=\$1
+
+if [ \"\$_A\" -eq \"\$_A\" ] 2>/dev/null; then
+/bin/java -cp ${path}/bin/:/usr/share/java/rabbitmq-java-client.jar ${src_name} \$_A
+else
+  echo \"Integer argument required\"
+fi
+"
+
+file { "${path}/bin/stress.sh":
+      content => $strcontent,
+      mode => '755'  
+    }
+
+file { "${path}/bin/jpublish.sh":
+      content => $rcontent,
+      mode => '755'  
+    }
 
 }
