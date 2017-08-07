@@ -12,6 +12,7 @@ node 'central' {
     mpm_module => 'prefork',
     default_vhost => false,	
   }
+
   include apache::mod::php
 
   class { 'mysql::server': }
@@ -23,7 +24,7 @@ node 'central' {
 	default_vhost => true,
 	zabbix_api_user =>  'capi',
 	zabbix_api_pass => 'i6htnXdeWjex4z',
-  }
+      }
    class { '::php':
     fpm => false,	
     settings   => {
@@ -33,29 +34,27 @@ node 'central' {
       'PHP/post_max_size'       => '32M',
       'PHP/upload_max_filesize' => '32M',
       'Date/date.timezone'      => 'Europe/Riga',
-    },
-  }
-  #$myip=$::facts['networking']['ip']
-  #$myhost=$::facts['networking']['hostname']
-  #notify  {"MyIP is ${myip} ( ${facts['networking']['ip']}) MyHost ${myhost} ( ${facts['networking']['hostname']}  ": }
+	},
+      }
   
    class { 'zabbix::agent':
     server => "127.0.0.1,${serverip} ",
     hostname => $::facts['networking']['hostname'],
     listenip => '0.0.0.0',	
-   }
+       }
 
    file { '/etc/zabbix/Template_Linux_App_rabbitmq.xml': 
        source => 'puppet:///modules/zabbix/templates/Template_Linux_App_rabbitmq.xml' 
 
-  }
+      }
+
   zabbix_template { 'Template_Linux_App_RabbitMQ': 
      template_source => '/etc/zabbix/Template_Linux_App_rabbitmq.xml',
      zabbix_url => 'localhost',    
      zabbix_user => 'Admin',   
      zabbix_pass => 'zabbix',
      require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] ] 
-  }
+      }
   	
   zabbix_host { $::facts['networking']['hostname']:
 	ipaddress => $::facts['networking']['ip'],
@@ -67,6 +66,7 @@ node 'central' {
         port => 10050,
         require => [ Class['Zabbix::Agent'] , Class['Zabbix::Server'], Service['httpd']  ]
        }
+
   zabbix_host { $worker_hostname:
 	ipaddress => zbhelper::ns_resolve($worker_hostname),
 	group => $zabbix_hostgroup, 
@@ -107,5 +107,15 @@ node /worker.*/ {
    package{'python34-pika':
     ensure=>latest,
    }
+  zabbix_host { $::facts['networking']['hostname']:
+	ipaddress => $::facts['networking']['ip'],
+	group => $zabbix_hostgroup, 
+	templates => ['Template OS Linux','Template App SSH Service'] , 
+        zabbix_url => $zabbix_servername ,
+        zabbix_user => $zabbix_user,
+        zabbix_pass => $zabbix_pass, 
+        port => 10050,
+        require => [ Class['Zabbix::Agent']  ]
+       }
 
 }

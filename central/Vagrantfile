@@ -113,6 +113,18 @@ CSCRIPT
     worker.vm.provision :shell do |shell|
       shell.inline = $script
     end
-    central.vm.provision "shell", inline: "/opt/puppetlabs/bin/puppet apply --modulepath=/vagrant/puppet/modules /vagrant/puppet/manifests/site.pp"
+    worker.vm.provision "shell", inline: "/opt/puppetlabs/bin/puppet apply --modulepath=/vagrant/puppet/modules /vagrant/puppet/manifests/site.pp"
   end
+
+  (1..3).each do |i|
+    config.vm.define "worker_#{i}",autostart: false do |node|
+      node.vm.hostname = "worker_#{i}"
+      node.vm.box = "centos/7"
+      node.vm.provision :shell do |shell|
+        shell.inline = $script
+      end
+      node.vm.provision "shell", inline: "/opt/puppetlabs/bin/puppet apply --modulepath=/vagrant/puppet/modules /vagrant/puppet/manifests/site.pp"
+    end
+  end
+
 end
