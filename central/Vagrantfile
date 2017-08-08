@@ -89,6 +89,7 @@ CSCRIPT
   config.vm.define :central, primary: true  do |central| 
    # central.vm.network "public_network", ip: "192.168.0.23"
    central.vm.network "forwarded_port", guest: 80, host: 8080
+   central.vm.network "forwarded_port", guest: 15672, host: 15672
    central.vm.provider :libvirt do |libvirt, override|
       libvirt.memory = 2048
       libvirt.cpus = 2
@@ -118,7 +119,7 @@ CSCRIPT
 
   (1..3).each do |i|
     config.vm.define "worker_#{i}",autostart: false do |node|
-      node.vm.hostname = "worker_#{i}"
+      node.vm.hostname = "worker-#{i}"
       node.vm.box = "centos/7"
       node.vm.provision :shell do |shell|
         shell.inline = $script
