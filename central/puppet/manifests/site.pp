@@ -73,6 +73,16 @@ node 'central' {
      zabbix_pass => 'zabbix',
      require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] ] 
       }
+  zabbix_action_script {'RabbitMQ queue is over quota' :
+     trigger_filter => 'RabbitMQ queue is over quota',
+     ensure => present,
+     zabbix_url => 'localhost',
+     zabbix_user => 'Admin',
+     zabbix_pass => 'zabbix',
+     require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] , Zabbix_Template['Template_Linux_App_RabbitMQ']] 
+      
+     }
+
   	
   zabbix_host { $::facts['networking']['hostname']:
 	ipaddress => $::facts['networking']['ip'],
