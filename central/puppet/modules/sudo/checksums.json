@@ -1,0 +1,12 @@
+{
+  "LICENSE": "a300b604c66de62cf6e923cca89c9d83",
+  "README.md": "bb6957d9b97042f2dfd58c1ba2986f57",
+  "Rakefile": "e90d68823ff237c89224eb139f8926ad",
+  "manifests/directive.pp": "6e86af6cb5494bb71511396f09df96b4",
+  "manifests/init.pp": "22006947fa97cfa6a0bd372a21940c4a",
+  "manifests/params.pp": "69fcfae46645c6939d9bb4be972fff9d",
+  "metadata.json": "52fcd5445ce682184004c013204b3726",
+  "spec/classes/sudo_spec.rb": "83aede212a8c81e06ab3181d76038bd8",
+  "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+  "templates/sudoers_head.erb": "fd9d2ec7cb13c8ffd656770c023430bf"
+}

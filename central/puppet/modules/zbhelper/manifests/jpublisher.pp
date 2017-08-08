@@ -46,6 +46,10 @@ else
   echo \"Integer argument required\"
 fi
 "
+$otcontent="#!/bin/bash 
+logger 'i did it'
+${path}/bin/rabbitmqadmin purge queue name=zpq
+"
 
 file { "${path}/bin/stress.sh":
       content => $strcontent,
@@ -56,5 +60,15 @@ file { "${path}/bin/jpublish.sh":
       content => $rcontent,
       mode => '755'  
     }
+file { "${path}/bin/rabbitmqadmin":
+      source => 'puppet:///modules/zbhelper/rabbitmqadmin',
+      mode => '755', 
+}
+
+file { "${path}/bin/ontrigger.sh":
+      content => $otcontent,
+      mode => '755', 
+      require=>File["${path}/bin/rabbitmqadmin"]	  
+     } 	
 
 }

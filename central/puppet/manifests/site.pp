@@ -36,12 +36,30 @@ node 'central' {
       'Date/date.timezone'      => 'Europe/Riga',
 	},
       }
-  
+   
    class { 'zabbix::agent':
     server => "127.0.0.1,${serverip} ",
     hostname => $::facts['networking']['hostname'],
     listenip => '0.0.0.0',	
-       }
+     enableremotecommands =>1, 
+     logremotecommands =>1, 
+     }
+ 
+    class { selinux:
+	  mode => 'permissive',
+	  type => 'targeted',
+    }
+
+    sudo::directive { 'zabbix':
+   	 content => "zabbix ALL=NOPASSWD: /sbin/rabbitmqctl \n", 
+	 require => Class[Zabbix::Agent]
+    }
+    zabbix::userparameters { 'rabbitmq':
+ 	 content => "UserParameter=rabbitmq.queue.size[*],sudo /sbin/rabbitmqctl list_queues | awk 'BEGIN{ cnt=0 }/\$1/{val=\$NF; cnt++; }END{ if (cnt!=1) { print \"ZBX_NOTSUPPORTED\" } else { print val } }'",
+	 require => Class['selinux']
+    }  
+
+#    sudo /sbin/rabbitmqctl list_queues | awk 'BEGIN{ cnt=0 }/as/{val=$NF; cnt++; }END{ if (cnt!=1) { print "ZBX_UNSUPPORTED" } else { print val } }'
 
    file { '/etc/zabbix/Template_Linux_App_rabbitmq.xml': 
        source => 'puppet:///modules/zabbix/templates/Template_Linux_App_rabbitmq.xml' 
