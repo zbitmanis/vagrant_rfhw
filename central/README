@@ -1,0 +1,27 @@
+Task solution is based on puppet configuration management. As Linux distributive is used CentOS v7. 
+Vagrant directory structure: vagrant directory contains following directories and files 
+/vagrant/repo : Centos local yum repository. From this repository puppet-agent and a few other packages will be installed.  If all boxes does not have internet access at all all necsesary packages in this repository can be placed.  
+
+/vagrant/puppet/modules: all necessary puppet modules including for this task developed module "zbhelper" with ruby based zabbix action managment type zabbix_action_script. Zabbix_action_script type uses express42/zabbixapi ruby gem. 
+For Java based publisher application (/opt/zb/src/AMQPublisher.java /opt/zb/bin/AMQPublisher.class )  and helper scripts  (/opt/zb/bin/*) managment are used zbhelper::jpublisher class. 
+For python based AMQP consumer managment is used puppet class zbhelper::psleeper. 
+
+/vagrant/puppet/manifest: contains main puppet node managment file site.pp .  
+
+/rpm-gpg : contains necessary rpm GPG  keys. 
+
+To start infrastructure development just run "vagrant up": this will create two boxes central and worker. Both machines will be automatically registered in zabbix. 
+If additional worker_[1-9] box is required run vagrant up worker_1 , vagrant run worker_2 etc.  
+All additional (worker_[1-9]) boxes must be developed only after central box development is finished, or those boxes will not be registered in zabbix monitoring system.
+
+You can access zabbix monitoring system by address 
+http://localhost:8080 
+User:Admin 
+Password:zabbix. 
+
+There is a newly created and imported zabbix template Template_Linux_App_RabbitMQ. 
+This template uses zabbix macro  {$ZPQ_QUOTA}  for queue threshold definition (default 90). If this threshold is reached zabbix will execute /opt/zb/bin/ontrigger.sh script. AMQP queue size item value renews every 30 sec.  
+
+To publish mesages on AMQP just run vagrant ssh -c /opt/zb/bin/jpublish.sh  or vagrant ssh central -c /opt/zb/bin/jpublish.sh  with integer argument.  
+To publish  100 AMQP random integer values run:  vagrant ssh -c /opt/zb/bin/stress.sh 
+

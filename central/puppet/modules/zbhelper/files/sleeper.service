@@ -1,0 +1,18 @@
+[Unit]
+Description=Sleeper amqp consumer
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+PIDFile=/var/run/sleeper/sleeper.pid
+KillMode=control-group
+ExecStart=/opt/zb/bin/zba.py -f y
+ExecStop=/bin/kill -SIGTERM $MAINPID
+RestartSec=10s
+User=sleeper
+Group=sleeper
+
+[Install]
+WantedBy=multi-user.target

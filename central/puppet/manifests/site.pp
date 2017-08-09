@@ -59,7 +59,6 @@ node 'central' {
 	 require => Class['selinux']
     }  
 
-#    sudo /sbin/rabbitmqctl list_queues | awk 'BEGIN{ cnt=0 }/as/{val=$NF; cnt++; }END{ if (cnt!=1) { print "ZBX_UNSUPPORTED" } else { print val } }'
 
    file { '/etc/zabbix/Template_Linux_App_rabbitmq.xml': 
        source => 'puppet:///modules/zabbix/templates/Template_Linux_App_rabbitmq.xml' 
@@ -73,6 +72,7 @@ node 'central' {
      zabbix_pass => 'zabbix',
      require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] ] 
       }
+
   zabbix_action_script {'RabbitMQ queue is over quota' :
      trigger_filter => 'RabbitMQ queue is over quota',
      ensure => present,
@@ -133,18 +133,20 @@ node /worker.*/ {
     hostname => $::facts['networking']['hostname'],
     listenip => '0.0.0.0',	
    }
-   package{'python34-pika':
-    ensure=>latest,
+   if  $hostname =~ /\d+/ {
+    zabbix_host { $::facts['networking']['hostname']:
+     	ipaddress => $::facts['networking']['ip'],
+      group => $zabbix_hostgroup, 
+    	templates => ['Template OS Linux','Template App SSH Service'] , 
+      zabbix_url => $zabbix_servername ,
+      zabbix_user => $zabbix_user,
+      zabbix_pass => $zabbix_pass, 
+      port => 10050,
+      require => [ Class['Zabbix::Agent']  ]
+      }
    }
-  zabbix_host { $::facts['networking']['hostname']:
-	ipaddress => $::facts['networking']['ip'],
-	group => $zabbix_hostgroup, 
-	templates => ['Template OS Linux','Template App SSH Service'] , 
-        zabbix_url => $zabbix_servername ,
-        zabbix_user => $zabbix_user,
-        zabbix_pass => $zabbix_pass, 
-        port => 10050,
-        require => [ Class['Zabbix::Agent']  ]
-       }
+
+   class { 'zbhelper::psleeper':
+   }
 
 }
