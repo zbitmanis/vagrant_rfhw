@@ -42,11 +42,11 @@ Puppet::Type.type(:zabbix_action_script).provide(:ruby) do
 	  },
 	  :operations => [
 	      {
-		  :operationtype => '1',              # send message
+		  :operationtype => '1',            
 		  :opcommand => {
 		      :type => '0',            # use default message
 		      :execute_on =>  '0',            # email id
-		      :command =>  '/opt/zb/bin/ontrigger.sh' , 
+		      :command =>  @resource[:command] , 
 		  },
                       :opcommand_hst => [{
 			      :hostid=> 0
@@ -65,13 +65,7 @@ Puppet::Type.type(:zabbix_action_script).provide(:ruby) do
 
   def exists?
     zbx = connect
-    aid=zbx.actions.get_id(name: @resource[:name])
-    puts aid 
-     if aid.nil?
-	false
-     else
-       true
-     end
+    zbx.actions.get_id(name: @resource[:name])
   end
 
   def destroy

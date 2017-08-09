@@ -79,6 +79,7 @@ node 'central' {
      zabbix_url => 'localhost',
      zabbix_user => 'Admin',
      zabbix_pass => 'zabbix',
+     command => '/opt/zb/bin/ontrigger.sh',
      require =>[ File['/etc/zabbix/Template_Linux_App_rabbitmq.xml'] ,   Class['Zabbix::Server'], Service['httpd'] , Zabbix_Template['Template_Linux_App_RabbitMQ']] 
       
      }
