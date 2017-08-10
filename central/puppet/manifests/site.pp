@@ -74,7 +74,7 @@ node 'central' {
       }
 
   zabbix_action_script {'RabbitMQ queue is over quota' :
-     trigger_filter => 'RabbitMQ queue is over quota',
+     trigger_filter =>  'RabbitMQ',
      ensure => present,
      zabbix_url => 'localhost',
      zabbix_user => 'Admin',
@@ -111,7 +111,7 @@ node 'central' {
    }
 
    class {'rabbitmq':
-   }	
+   }
    
    package{'python34-pika':
     ensure=>latest,

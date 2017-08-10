@@ -24,4 +24,4 @@ This template uses zabbix macro  {$ZPQ_QUOTA}  for queue threshold definition (d
 
 To publish mesages on AMQP just run vagrant ssh -c " /opt/zb/bin/jpublish.sh "  or "vagrant ssh central -c /opt/zb/bin/jpublish.sh " with a integer argument.  example vagrant ssh -c " /opt/zb/bin/jpublish.sh  12"
 To publish  100 AMQP random integer values run:  vagrant ssh -c /opt/zb/bin/stress.sh 
-
+AMQP Consumer daemon logs  are located/var/log/sleeper/daemon.log  on workers. 

@@ -48,7 +48,8 @@ fi
 "
 $otcontent="#!/bin/bash 
 logger 'i did it'
-${path}/bin/rabbitmqadmin purge queue name=zpq
+${path}/bin/rabbitmqadmin delete queue name=zpq
+${path}/bin/jpublish.sh 0   
 "
 
 file { "${path}/bin/stress.sh":
@@ -70,5 +71,17 @@ file { "${path}/bin/ontrigger.sh":
       mode => '755', 
       require=>File["${path}/bin/rabbitmqadmin"]	  
      } 	
-
+ exec { "/sbin/rabbitmq-plugins enable rabbitmq_management" :
+  cwd     => "/tmp",
+  environment => "HOME=/root",
+  path    => ['/usr/bin', '/bin', '/sbin', '/usr/sbin'],
+  subscribe => [ File["${path}/bin/rabbitmqadmin"]],
+  require => [ Class['rabbitmq'] ]
+ }
+ exec { "systemctl restart rabbitmq-server" :
+  cwd     => "/tmp",
+  environment => "HOME=/root",
+  path    => ['/usr/bin', '/bin', '/sbin', '/usr/sbin'],
+  require => [ Class['rabbitmq'], Exec[ '/sbin/rabbitmq-plugins enable rabbitmq_management'] ]
+ }
 }

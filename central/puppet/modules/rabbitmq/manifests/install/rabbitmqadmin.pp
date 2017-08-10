@@ -25,24 +25,24 @@ class rabbitmq::install::rabbitmqadmin {
     $sanitized_ip = $node_ip_address
   }
 
-  staging::file { 'rabbitmqadmin':
-    target      => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
-    source      => "${protocol}://${default_user}:${default_pass}@${sanitized_ip}:${management_port}/cli/rabbitmqadmin",
-    curl_option => "-k ${curl_prefix} --retry 30 --retry-delay 6",
-    timeout     => '180',
-    wget_option => '--no-proxy',
-    require     => [
-      Class['rabbitmq::service'],
-      Rabbitmq_plugin['rabbitmq_management']
-    ],
-  }
+#  staging::file { 'rabbitmqadmin':
+#    target      => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
+#    source      => "${protocol}://${default_user}:${default_pass}@${sanitized_ip}:${management_port}/cli/rabbitmqadmin",
+#    curl_option => "-k ${curl_prefix} --retry 30 --retry-delay 6",
+#    timeout     => '180',
+#    wget_option => '--no-proxy',
+#    require     => [
+#      Class['rabbitmq::service'],
+#      Rabbitmq_plugin['rabbitmq_management']
+#    ],
+#  }
 
-  file { '/usr/local/bin/rabbitmqadmin':
-    owner   => 'root',
-    group   => '0',
-    source  => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
-    mode    => '0755',
-    require => Staging::File['rabbitmqadmin'],
-  }
+ # file { '/usr/local/bin/rabbitmqadmin':
+ #   owner   => 'root',
+ #   group   => '0',
+ #   source  => "${rabbitmq::rabbitmq_home}/rabbitmqadmin",
+ #   mode    => '0755',
+ #   require => Staging::File['rabbitmqadmin'],
+ # }
 
 }

@@ -26,7 +26,7 @@ Puppet::Type.type(:zabbix_action_script).provide(:ruby) do
 	  :name =>  @resource[:name],
 	  :eventsource => '0',                    # event source is a triggerid
 	  :status => '0',                         # action is enabled
-	  :esc_period => '120',                   # how long each step should take
+	  :esc_period => '60',                   # how long each step should take
 	  :def_shortdata => "Email header",
 	  :def_longdata => "Email content",
 	  :maintenance_mode => '1',
@@ -42,7 +42,10 @@ Puppet::Type.type(:zabbix_action_script).provide(:ruby) do
 	  },
 	  :operations => [
 	      {
-		  :operationtype => '1',            
+		  :operationtype => '1',
+		  :esc_period => '60',            
+		  :esc_step_from => '1',            
+		  :esc_step_to => '5',            
 		  :opcommand => {
 		      :type => '0',            # use default message
 		      :execute_on =>  '0',            # email id
