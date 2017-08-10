@@ -22,6 +22,6 @@ Password:zabbix.
 There is a newly created and imported zabbix template Template_Linux_App_RabbitMQ. 
 This template uses zabbix macro  {$ZPQ_QUOTA}  for queue threshold definition (default 90). If this threshold is reached zabbix will execute /opt/zb/bin/ontrigger.sh script. AMQP queue size item value renews every 30 sec.  
 
-To publish mesages on AMQP just run vagrant ssh -c /opt/zb/bin/jpublish.sh  or vagrant ssh central -c /opt/zb/bin/jpublish.sh  with integer argument.  
+To publish mesages on AMQP just run vagrant ssh -c " /opt/zb/bin/jpublish.sh "  or "vagrant ssh central -c /opt/zb/bin/jpublish.sh " with a integer argument.  example vagrant ssh -c " /opt/zb/bin/jpublish.sh  12"
 To publish  100 AMQP random integer values run:  vagrant ssh -c /opt/zb/bin/stress.sh 
 

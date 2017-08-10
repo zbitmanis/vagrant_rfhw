@@ -1,6 +1,6 @@
 require 'spec_helper'
-describe 'zbxhelper' do
+describe 'zbhelper' do
   context 'with default values for all parameters' do
-    it { should contain_class('zbxhelper') }
+    it { should contain_class('zbhelper') }
   end
 end
